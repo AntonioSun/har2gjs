@@ -19,7 +19,8 @@ start {
 
       transaction('TR0_{{$urlname}}') {
         http('{{.Request.Method}} {{$url}}') {
-          params values: {{.Request.QueryString}}
+	  {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
+          params values: {{.Request.QueryString}}{{end}}
 
           check_response {
             status() eq 200
