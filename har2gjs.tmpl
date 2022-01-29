@@ -1,0 +1,48 @@
+@GrabConfig(systemClassLoader = true)
+@Grab('net.simonix.scripts:groovy-jmeter')
+
+@groovy.transform.BaseScript net.simonix.dsl.jmeter.TestScript script
+
+start {
+  plan {
+    arguments {
+      argument(name: 'var_host', value: "${jmt_host}")
+      argument(name: 'var_user_nm', value: "${jmt_user_nm}")
+      argument(name: 'var_user_pw', value: "${jmt_user_pw}")
+    }
+
+    defaults(protocol: 'http', domain: '${var_host}', port: 1080)
+
+    group(users: jmt_users, rampUp: jmt_ramp) {
+      cookies(){{range .Log.Entries}}
+      {{- $url := .Request.Url}}{{$urlname := fpBase $url}}
+
+      transaction('TR0_{{$urlname}}') {
+        http('{{.Request.Method}} {{$url}}') {
+          params values: {{.Request.QueryString}}
+
+          check_response {
+            status() eq 200
+          }
+
+          //extract_json expressions: '$..id', variables: 'var_bookId'
+        }
+      }{{end}}
+
+    summary(file: 'result.log', enabled: true)
+
+    backend(name: 'InfluxDb Backend', enabled: true) {
+      arguments {
+        argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
+        argument(name: 'influxdbUrl', value: 'http://{{ENV "GJS_InfluxdbUrl"}}:8086/write?db=jmeter')
+        argument(name: 'application', value: '${__groovy((&quot;${__TestPlanName}&quot;).replace(&apos;.jmx&apos;\,&apos;&apos;),)}')
+        argument(name: 'measurement', value: 'jmeter')
+        argument(name: 'summaryOnly', value: 'false')
+        argument(name: 'samplersRegex', value: '.*')
+        argument(name: 'percentiles', value: '90;95;99')
+        argument(name: 'testTitle', value: "{{ENV "GJS_App"}} - : ${jmt_users}, rampup: ${jmt_ramp}")
+        argument(name: "eventTags", value: '')
+      }
+    }
+  }
+}
