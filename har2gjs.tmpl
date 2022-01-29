@@ -34,6 +34,7 @@ start {
           //extract_json expressions: '$..id', variables: 'var_bookId'
         }
       }{{end}}
+    }
 
     summary(file: 'result.log', enabled: true)
 
@@ -41,7 +42,7 @@ start {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
         argument(name: 'influxdbUrl', value: 'http://{{ENV "GJS_InfluxdbUrl"}}:8086/write?db=jmeter')
-        argument(name: 'application', value: '${__groovy((&quot;${__TestPlanName}&quot;).replace(&apos;.jmx&apos;\,&apos;&apos;),)}')
+        argument(name: 'application', value: 'THE_APPLICATION')
         argument(name: 'measurement', value: 'jmeter')
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
