@@ -47,7 +47,7 @@ start {
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
         argument(name: 'percentiles', value: '90;95;99')
-        argument(name: 'testTitle', value: "{{ENV "GJS_App"}} - : ${jmt_users}, rampup: ${jmt_ramp}")
+        argument(name: 'testTitle', value: "{{ENV "GJS_App"}} - users: ${jmt_users}, rampup: ${jmt_ramp}")
         argument(name: "eventTags", value: '')
       }
     }
