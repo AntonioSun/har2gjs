@@ -14,19 +14,19 @@ start {
     defaults(protocol: 'http', domain: '${var_host}', port: 1080)
 
     group(users: jmt_users, rampUp: jmt_ramp) {
-      cookies(){{range .Log.Entries}}
-      {{- $url := .Request.Url}}{{$urlname := fpBase $url}}
+      cookies(){{range .Reqs}}
+      {{- $url := .URL}}{{$urlname := fpBase $url}}
 
       transaction('TR0_{{$urlname}}') {
-        http('{{.Request.Method}} {{$url}}') {
-	  headers { {{- range .Request.Headers}}
+        http('{{.Method}} {{$url}}') {
+	  {{if .Headers}}headers { {{- range .Headers}}
 	    {{- $ignore := regexpFindString .Name "(?i)^sec-"}}{{if not $ignore}}
 	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}{{end}}
 	  }
-
-	  {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
-          params values: {{.Request.QueryString}}{{end}}
-
+{{end}}
+	  {{- if .QueryString}}{{$length := len .QueryString }}{{ if ne $length 0 }}
+          params values: {{.QueryString}}{{end}}
+{{end}}
           check_response {
             status() eq 200
           }
@@ -42,7 +42,7 @@ start {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
         argument(name: 'influxdbUrl', value: 'http://{{ENV "GJS_InfluxdbUrl"}}:8086/write?db=jmeter')
-        argument(name: 'application', value: 'THE_APPLICATION')
+        argument(name: 'application', value: '''${__groovy(("${__TestPlanName}").replace('.jmx',''),)}''')
         argument(name: 'measurement', value: 'jmeter')
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
