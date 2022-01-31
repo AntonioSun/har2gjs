@@ -1,0 +1,36 @@
+Reqs:
+  - URL: https://httpbin.org/basic-auth/user/passwd
+    Method: GET
+    Headers:
+      - Name: 'Cache-Control'
+        Value: 'max-age=0'
+
+  - URL: https://httpbin.org/basic-auth/user/passwd
+    Method: GET
+    Headers:
+      - Name: 'Cache-Control'
+        Value: 'max-age=0'
+      - Name: 'Authorization'
+        Value: 'Basic dXNlcjpwYXNzd2Q='
+
+  - URL: https://httpbin.org/status/300
+    Method: GET
+    
+  - URL: https://httpbin.org/status/200
+    Method: GET
+    
+  - URL: https://httpbin.org/uuid
+    Method: GET
+    Headers:
+      - Name: 'accept'
+        Value: 'application/json'
+
+  - URL: https://httpbin.org/base64/SFRUUEJJTiBpcyBhd2Vzb21l
+    Method: GET
+    Headers:
+      - Name: 'accept'
+        Value: 'text/html'
+
+  - URL: https://httpbin.org/spec.json
+    Method: GET
+    
