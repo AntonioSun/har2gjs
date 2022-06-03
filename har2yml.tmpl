@@ -2,9 +2,16 @@ Reqs:{{range .Log.Entries}}
   - URL: {{.Request.Url}}
     Method: {{.Request.Method}}
     Headers:{{range .Request.Headers}}
-    {{- $ignore := regexpFindString .Name "(?i)^sec-"}}{{if not $ignore}}
+    {{- $ignore := regexpFindString .Name "(?i)^(sec-|Content-Length|Cookie)"}}{{if not $ignore}}
       - Name: '{{.Name}}'
         Value: '{{.Value}}'{{end}}{{end}}
      {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
      QueryString: {{.Request.QueryString}}{{end}}
+     {{- with .Request.PostData }}
+     PostData:
+       {{- with .Params}}
+       Params: {{.}}{{else}}
+       Text: {{.Text}}
+       {{end}}
+     {{end}}
 {{end}}
