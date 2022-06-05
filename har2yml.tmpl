@@ -14,6 +14,6 @@ Reqs:{{range .Log.Entries}}
         {{ regexpReplaceAllString .Text "\r?\n" "\n        " }}
        {{- else}}{{.Text}}
        {{- end}}
-      {{end}}
-    {{end}}
+      {{- end}}
+    {{- end}}
 {{end}}

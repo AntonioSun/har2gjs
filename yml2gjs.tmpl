@@ -3,24 +3,39 @@
 
 @groovy.transform.BaseScript net.simonix.dsl.jmeter.TestScript script
 
+{{ $host := ENV "GJS_Host" -}}
 start {
   plan {
     arguments {
-      argument(name: 'var_host', value: "${jmt_host}")
-      argument(name: 'var_user_nm', value: "${jmt_user_nm}")
-      argument(name: 'var_user_pw', value: "${jmt_user_pw}")
+      argument(name: 'c_app_host', value: `${__P(c_app_host, "{{ coalesce $host "localhost"}}")}`)
+      argument(name: 'c_lt_users', value: `${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}`) // loadtest users
+      argument(name: 'c_lt_ramp', value: `${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}`) // loadtest ramp up in seconds
+      argument(name: 'c_tt_range', value: `${__P(c_tt_range, {{ coalesce (ENV "GJS_TT_RANGE") 6000}})}`) // Maximum random number of ms to delay
+      argument(name: 'c_tt_delay', value: `${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}`) // Ms to delay in addition to random time
+      {{range .Arguments -}}
+      argument(name: '{{.Name}}', value: '{{.Value}}')
+      {{end -}}
     }
 
-    defaults(protocol: 'http', domain: '${var_host}', port: 1080)
+    defaults(protocol: 'https', domain: '${c_app_host}', port: 80)
 
-    group(users: jmt_users, rampUp: jmt_ramp) {
+    group(users: ${c_lt_users}, rampUp: ${c_lt_ramp}) {
       cookies(){{range .Reqs}}
       {{- $url := .URL}}{{$urlname := fpBase $url}}
 
       transaction('TR0_{{$urlname}}') {
         http('{{.Method}} {{$url}}') {
-	  {{if .Headers}}headers { {{- range .Headers}}
-	    {{- $ignore := regexpFindString .Name "(?i)^sec-"}}{{if not $ignore}}
+	  {{if .Headers}}headers {
+            header(name: 'Host', value: '{{$host}}')
+            header(name: 'Origin', value: '{{$host}}')
+            header(name: 'Referer', value: '{{$host}}')
+            header(name: 'Connection', value: 'keep-alive')
+            header(name: 'Cache-Control', value: 'max-age=0')
+            header(name: 'Upgrade-Insecure-Requests', value: '1')
+            header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
+	    {{range .Headers}}
+	    {{- $wanted := regexpFindString .Name `(?i)^Accept$`}}
+	    {{- if $wanted -}}
 	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}{{end}}
 	  }
 {{end}}
@@ -31,13 +46,14 @@ start {
             status() eq 200
           }
 
-          //extract_json expressions: '$..id', variables: 'var_bookId'
+          //extract_jmes expressions: '.book.id', variables: 'p_bookId'
         }
       }{{end}}
     }
 
-    summary(file: 'result.log', enabled: true)
+    summary(file: '{{ coalesce $host "result"}}.jtl', enabled: true)
 
+    {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
     backend(name: 'InfluxDb Backend', enabled: true) {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
@@ -51,5 +67,6 @@ start {
         argument(name: "eventTags", value: '')
       }
     }
+    {{end -}}
   }
 }
