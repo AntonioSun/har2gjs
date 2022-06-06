@@ -37,10 +37,8 @@ start {
       transaction('TR0_{{$urlname}}') {
         http('{{.Method}} {{$url}}') {
 	  {{if .Headers}}headers {
-	    {{- range .Headers}}
-	    {{- $wanted := regexpFindString .Name `(?i)^Accept$`}}
-	    {{- if $wanted }}
-	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}{{end}}
+	    {{range .Headers -}}
+	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}
 	  }
 {{end}}
 	  {{- if .QueryString}}{{$length := len .QueryString }}{{ if ne $length 0 }}

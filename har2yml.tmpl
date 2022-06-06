@@ -1,15 +1,19 @@
 Reqs:{{range .Log.Entries}}
   - URL: {{.Request.Url}}
     Method: {{.Request.Method}}
-    Headers:{{range .Request.Headers}}
-    {{- $ignore := regexpFindString .Name "(?i)^(sec-|Content-Length|Cookie)"}}{{if not $ignore}}
+    Headers:
+      {{range .Request.Headers -}}
+      {{- $wanted := regexpFindString .Name `(?i)^Accept$`}} {{- if $wanted -}}
       - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}
     {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
-    QueryString: {{.Request.QueryString}}{{end}}
+    QueryString: {{- with .Request.QueryString}} {- {range .}}
+        - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}
     {{- with .Request.PostData }}
     PostData:
-      {{- with .Params}}
-      Params: {{.}}{{else}}
+      {{with .Params -}}
+      Params: {{range .}}
+        - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}
+      {{else -}}
       Text: {{if (stringsContains .Text "\n")}}|
         {{ regexpReplaceAllString .Text "\r?\n" "\n        " }}
        {{- else}}{{.Text}}
