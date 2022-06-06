@@ -39,11 +39,19 @@ start {
 	  {{if .Headers}}headers {
 	    {{range .Headers -}}
 	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}
-	  }
-{{end}}
-	  {{- if .QueryString}}{{$length := len .QueryString }}{{ if ne $length 0 }}
-          params values: {{.QueryString}}{{end}}
-{{end}}
+	  }{{end}}
+	  {{- if or .PostData.Params .QueryString}}
+          params {
+	    {{if .PostData.Params -}} {{- range .PostData.Params -}}
+	    param(name: '{{.Name}}', value: '{{.Value}}')
+	    {{end -}}
+	    {{ else if .QueryString}} {{- range .QueryString -}}
+	    param(name: '{{.Name}}', value: '{{.Value}}')
+	    {{end -}}
+	    {{end}}
+          }
+	  {{- end}}
+
           check_response {
             status() eq 200
           }
