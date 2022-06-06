@@ -20,22 +20,26 @@ start {
     defaults(protocol: 'https', domain: '${c_app_host}', port: 80)
 
     group(users: ${c_lt_users}, rampUp: ${c_lt_ramp}) {
-      cookies(){{range .Reqs}}
+      headers {
+	header(name: 'Host', value: '{{$host}}')
+	header(name: 'Origin', value: '{{$host}}')
+	header(name: 'Referer', value: '{{$host}}')
+	header(name: 'Connection', value: 'keep-alive')
+	header(name: 'Cache-Control', value: 'max-age=0')
+	header(name: 'Upgrade-Insecure-Requests', value: '1')
+	header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
+      }
+      cookies()
+      cache()
+      {{- range .Reqs}}
       {{- $url := .URL}}{{$urlname := fpBase $url}}
 
       transaction('TR0_{{$urlname}}') {
         http('{{.Method}} {{$url}}') {
 	  {{if .Headers}}headers {
-            header(name: 'Host', value: '{{$host}}')
-            header(name: 'Origin', value: '{{$host}}')
-            header(name: 'Referer', value: '{{$host}}')
-            header(name: 'Connection', value: 'keep-alive')
-            header(name: 'Cache-Control', value: 'max-age=0')
-            header(name: 'Upgrade-Insecure-Requests', value: '1')
-            header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
-	    {{range .Headers}}
+	    {{- range .Headers}}
 	    {{- $wanted := regexpFindString .Name `(?i)^Accept$`}}
-	    {{- if $wanted -}}
+	    {{- if $wanted }}
 	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}{{end}}
 	  }
 {{end}}
