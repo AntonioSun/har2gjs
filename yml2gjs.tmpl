@@ -7,16 +7,16 @@
 {{- $app := ENV "GJS_App" -}}
 start {
   plan {
-    arguments {
-      argument(name: 'c_app_host', value: '${__P(c_app_host, {{ coalesce $host "localhost"}})}')
-      argument(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}') // loadtest users
-      argument(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}') // loadtest ramp up in seconds
-      argument(name: 'c_tt_range', value: '${__P(c_tt_range, {{ coalesce (ENV "GJS_TT_RANGE") 6000}})}') // Think Time: Maximum random number of ms to delay
-      argument(name: 'c_tt_delay', value: '${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}') // Think Time: Ms to delay in addition to random time
-      argument(name: 'c_pt_range', value: '${__P(c_pt_range, {{ coalesce (ENV "GJS_TT_RANGE") 120000}})}') // Pace Time: Maximum random number of ms to delay
-      argument(name: 'c_pt_delay', value: '${__P(c_pt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 60000}})}') // Pace Time: Ms to delay in addition to random time
+    variables {
+      variable(name: 'c_app_host', value: '${__P(c_app_host, {{ coalesce $host "localhost"}})}', description: 'Test server host name')
+      variable(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}', description: 'loadtest users')
+      variable(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}', description: 'loadtest ramp up in seconds')
+      variable(name: 'c_tt_range', value: '${__P(c_tt_range, {{ coalesce (ENV "GJS_TT_RANGE") 6000}})}', description: 'Think Time: Maximum random number of ms to delay')
+      variable(name: 'c_tt_delay', value: '${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}', description: 'Think Time: Ms to delay in addition to random time')
+      variable(name: 'c_pt_range', value: '${__P(c_pt_range, {{ coalesce (ENV "GJS_TT_RANGE") 120000}})}', description: 'Pace Time: Maximum random number of ms to delay')
+      variable(name: 'c_pt_delay', value: '${__P(c_pt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 60000}})}', description: 'Pace Time: Ms to delay in addition to random time')
       {{range .Arguments -}}
-      argument(name: '{{.Name}}', value: '{{.Value}}')
+      variable(name: '{{.Name}}', value: '{{.Value}}')
       {{end -}}
     }
 

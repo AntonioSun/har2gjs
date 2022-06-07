@@ -5,10 +5,10 @@
 
 start {
   plan {
-    arguments {
-      argument(name: 'var_host', value: "${jmt_host}")
-      argument(name: 'var_user_nm', value: "${jmt_user_nm}")
-      argument(name: 'var_user_pw', value: "${jmt_user_pw}")
+    variables {
+      variable(name: 'var_host', value: "${jmt_host}")
+      variable(name: 'var_user_nm', value: "${jmt_user_nm}")
+      variable(name: 'var_user_pw', value: "${jmt_user_pw}")
     }
 
     defaults(protocol: 'http', domain: '${var_host}', port: 1080)
