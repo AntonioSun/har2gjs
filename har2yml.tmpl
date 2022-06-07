@@ -6,8 +6,8 @@ Reqs:{{range .Log.Entries}}
       {{- $wanted := regexpFindString .Name `(?i)^Accept$`}} {{- if $wanted -}}
       - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}
     {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
-    QueryString: {{- with .Request.QueryString}} {- {range .}}
-        - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}
+    QueryString: {{- with .Request.QueryString}} {{- range .}}
+        - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}{{end}}
     {{- with .Request.PostData }}
     PostData:
       {{with .Params -}}
