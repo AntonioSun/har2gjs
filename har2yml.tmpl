@@ -17,7 +17,7 @@ Reqs:{{range .Log.Entries}}
       {{else -}}
       Text: {{if (stringsContains .Text "\n")}}|
         {{ regexpReplaceAllString .Text "\r?\n" "\n        " }}
-       {{- else}}{{.Text}}
+       {{- else}}'{{.Text}}'
        {{- end}}
       {{- end}}
     {{- end}}

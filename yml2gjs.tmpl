@@ -3,12 +3,12 @@
 
 @groovy.transform.BaseScript net.simonix.dsl.jmeter.TestScript script
 
-{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host "/" -}}
+{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host -}}
 {{- $app := ENV "GJS_App" -}}
 start {
   plan {
     arguments {
-      argument(name: 'c_app_host', value: '${__P(c_app_host, "{{ coalesce $host "localhost"}}")}')
+      argument(name: 'c_app_host', value: '${__P(c_app_host, {{ coalesce $host "localhost"}})}')
       argument(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}') // loadtest users
       argument(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}') // loadtest ramp up in seconds
       argument(name: 'c_tt_range', value: '${__P(c_tt_range, {{ coalesce (ENV "GJS_TT_RANGE") 6000}})}') // Think Time: Maximum random number of ms to delay
@@ -20,17 +20,18 @@ start {
       {{end -}}
     }
 
-    defaults(protocol: 'https', domain: '${c_app_host}', port: 80)
+    defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
 
-    group(users: ${c_lt_users}, rampUp: ${c_lt_ramp}) {
+    //group(users: ${c_lt_users}, rampUp: ${c_lt_ramp}) {
+    group(users: 1, rampUp: 1) {
       headers {
-	header(name: 'Host', value: '${c_app_host}')
-	header(name: 'Origin', value: '${c_app_host}')
-	header(name: 'Referer', value: '${c_app_host}')
-	header(name: 'Connection', value: 'keep-alive')
-	header(name: 'Cache-Control', value: 'max-age=0')
-	header(name: 'Upgrade-Insecure-Requests', value: '1')
-	header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
+        header(name: 'Host', value: '${c_app_host}')
+        header(name: 'Origin', value: '${c_app_host}')
+        header(name: 'Referer', value: '${c_app_host}')
+        header(name: 'Connection', value: 'keep-alive')
+        header(name: 'Cache-Control', value: 'max-age=0')
+        header(name: 'Upgrade-Insecure-Requests', value: '1')
+        header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
       }
       cookies()
       cache()
@@ -40,22 +41,26 @@ start {
 
       transaction('TR0_{{$urlname}}') {
         http('{{.Method}} {{$url}}') {
-	  {{if .Headers}}headers {
-	    {{- range .Headers}}
-	    header(name: '{{.Name}}', value: '{{.Value}}')
-	    {{- end}}
-	  }{{end}}
-	  {{- if or .PostData.Params .QueryString}}
+          {{if .Headers}}headers {
+            {{- range .Headers}}
+            header(name: '{{.Name}}', value: '{{.Value}}')
+            {{- end}}
+          }{{end}}
+          {{- if or .PostData.Params .QueryString}}
           params {
-	    {{if .PostData.Params -}} {{- range .PostData.Params -}}
-	    param(name: '{{.Name}}', value: '{{.Value}}')
-	    {{end -}}
-	    {{ else if .QueryString}} {{- range .QueryString -}}
-	    param(name: '{{.Name}}', value: '{{.Value}}')
-	    {{end -}}
-	    {{end}}
+            {{if .PostData.Params -}} {{- range .PostData.Params -}}
+            param(name: '{{.Name}}', value: '{{.Value}}')
+            {{end -}}
+            {{ else if .QueryString}} {{- range .QueryString -}}
+            param(name: '{{.Name}}', value: '{{.Value}}')
+            {{end -}}
+            {{end}}
           }
-	  {{- end}}
+          {{- else if .PostData.Text}}
+          body '''\
+{{.PostData.Text}}
+'''
+          {{- end}}
 
           check_response {
             status() eq 200
@@ -65,8 +70,6 @@ start {
         }
       }{{end}}
     }
-
-    summary(file: '{{ coalesce (ENV "GJS_App") "result"}}.jtl', enabled: true)
 
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
     backend(name: 'InfluxDb Backend', enabled: true) {
@@ -83,5 +86,8 @@ start {
       }
     }
     {{end -}}
+
+    summary(file: '{{ coalesce (ENV "GJS_App") "result"}}.jtl', enabled: true)
+    view (name: 'View Result Tree', file: '', enabled: true) // View Result Tree
   }
 }
