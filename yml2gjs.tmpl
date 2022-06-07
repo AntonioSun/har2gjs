@@ -3,7 +3,8 @@
 
 @groovy.transform.BaseScript net.simonix.dsl.jmeter.TestScript script
 
-{{ $host := ENV "GJS_Host" -}}
+{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host "/" -}}
+{{- $app := ENV "GJS_App" -}}
 start {
   plan {
     arguments {
@@ -34,13 +35,15 @@ start {
       cookies()
       cache()
       {{- range .Reqs}}
-      {{- $url := .URL}}{{$urlname := fpBase $url}}
+      {{- $url := stringsReplace .URL $hosturl "" 1}}
+      {{- $urlname := regexpReplaceAllString (fpBase $url) `\?.*$` ""}}
 
       transaction('TR0_{{$urlname}}') {
         http('{{.Method}} {{$url}}') {
 	  {{if .Headers}}headers {
-	    {{range .Headers -}}
-	    header(name: '{{.Name}}', value: '{{.Value}}'){{end}}
+	    {{- range .Headers}}
+	    header(name: '{{.Name}}', value: '{{.Value}}')
+	    {{- end}}
 	  }{{end}}
 	  {{- if or .PostData.Params .QueryString}}
           params {
