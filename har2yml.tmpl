@@ -2,9 +2,10 @@ Reqs:{{range .Log.Entries}}
   - URL: {{.Request.Url}}
     Method: {{.Request.Method}}
     Headers:
-      {{range .Request.Headers -}}
-      {{- $wanted := regexpFindString .Name `(?i)^Accept$`}} {{- if $wanted -}}
-      - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}
+      {{- range .Request.Headers}}
+      {{- $wanted := regexpFindString .Name `(?i)^(Accept|Content-Type)$`}} {{- if $wanted}}
+      - { Name: '{{.Name}}', Value: '{{.Value}}' }
+      {{- end}}{{- end}}
     {{- $length := len .Request.QueryString }}{{ if ne $length 0 }}
     QueryString: {{- with .Request.QueryString}} {{- range .}}
         - { Name: '{{.Name}}', Value: '{{.Value}}' }{{end}}{{end}}{{end}}
