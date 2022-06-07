@@ -35,6 +35,9 @@ start {
       }
       cookies()
       cache()
+      check_response {
+        status() eq 200
+      }
       {{- range .Reqs}}
       {{- $url := stringsReplace .URL $hosturl "" 1}}
       {{- $urlname := regexpReplaceAllString (fpBase $url) `\?.*$` ""}}
@@ -62,9 +65,9 @@ start {
 '''
           {{- end}}
 
-          check_response {
-            status() eq 200
-          }
+          // check_response {
+          //   status() eq 200
+          // }
 
           //extract_jmes expressions: '.book.id', variables: 'p_bookId'
         }
