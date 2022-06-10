@@ -38,6 +38,9 @@ start {
       check_response {
         status() eq 200
       }
+      check_response applyTo: 'parent', {
+        text(not) contains 'Wrong'
+      }
       {{- range .Reqs}}
       {{- $url := stringsReplace .URL $hosturl "" 1}}
       {{- $urlname := regexpReplaceAllString (fpBase $url) `\?.*$` ""}}
@@ -90,7 +93,7 @@ start {
     }
     {{end -}}
 
-    summary(file: '{{ coalesce (ENV "GJS_App") "result"}}.jtl', enabled: true)
-    view (name: 'View Result Tree', file: '', enabled: true) // View Result Tree
+    summary(file: '{{ coalesce (ENV "GJS_App") "result"}}.jtl') //, enabled: true
+    view (name: 'View Result Tree', file: '') // View Result Tree
   }
 }
