@@ -36,8 +36,6 @@ start {
       }{{end}}
     }
 
-    summary(file: 'result.log', enabled: true)
-
     backend(name: 'InfluxDb Backend', enabled: true) {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
@@ -51,5 +49,8 @@ start {
         argument(name: "eventTags", value: '')
       }
     }
+
+    summary(file: 'result.jtl')
+    view () // View Result Tree
   }
 }

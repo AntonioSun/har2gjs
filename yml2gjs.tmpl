@@ -23,8 +23,7 @@ start {
 
     defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
 
-    //group(users: ${c_lt_users}, rampUp: ${c_lt_ramp}) {
-    group(users: 1, rampUp: 1) {
+    group(users: '${c_lt_users}', rampUp: '${c_lt_ramp}') {
       headers {
         header(name: 'Host', value: '${c_app_host}')
         header(name: 'Origin', value: '${c_app_host}')
@@ -95,6 +94,6 @@ start {
     {{end -}}
 
     summary(file: '{{ coalesce (ENV "GJS_App") "result"}}.jtl') //, enabled: true
-    view (name: 'View Result Tree', file: '') // View Result Tree
+    view () // View Result Tree
   }
 }
