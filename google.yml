@@ -1,0 +1,34 @@
+Variables:
+  - {"Name":"p_q","Value":"groovy jmeter"}
+  - {"Name":"p_oq","Value":"groovy jmeter"}
+
+Reqs:
+  - URL: https://www.google.com/complete/search?q=groovy%20jmeter&cp=13&client=gws-wiz&xssi=t&hl=en-CA&authuser=0&psi=7mOjYq_CB5GLytMP0YiA8A4.1654875118388&gs_mss=groovy%20jmeter&dpr=1.5
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: '*/*' }
+    QueryString:
+        - { Name: 'q', Value: '${p_q}' }
+        - { Name: 'cp', Value: '13' }
+        - { Name: 'client', Value: 'gws-wiz' }
+        - { Name: 'xssi', Value: 't' }
+        - { Name: 'hl', Value: 'en-CA' }
+        - { Name: 'authuser', Value: '0' }
+        - { Name: 'gs_mss', Value: '${p_q}' }
+        - { Name: 'dpr', Value: '1.5' }
+    PostData:
+      Text: ''
+
+  - URL: https://www.google.com/search?q=groovy+jmeter&sxsrf=ALiCzsbbgaLCOOl8eVJLOxLsDrdoHQZWmw%3A1654875118172&source=hp&ei=7mOjYq_CB5GLytMP0YiA8A4&iflsig=AJiK0e8AAAAAYqNx_gnWob43Za1AEzxc2PQNs2vZ2N4d&ved=0ahUKEwiv8cCcmqP4AhWRhXIEHVEEAO4Q4dUDCAk&uact=5&oq=groovy+jmeter&gs_lcp=Cgdnd3Mtd2l6EAMyBQgAEIAEMgUIABCABDIFCAAQgAQyBggAEB4QFjIGCAAQHhAWMgYIABAeEBYyBggAEB4QFjIGCAAQHhAWMgYIABAeEBYyBggAEB4QFjoHCCMQ6gIQJzoECAAQHjoGCAAQHhAPOgYIABAeEAdQzANYqRFgoz5oAXAAeACAAU6IAaoCkgEBNJgBAKABAqABAbABCg&sclient=gws-wiz
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    QueryString:
+        - { Name: 'q', Value: '${p_q}' }
+        - { Name: 'source', Value: 'hp' }
+        - { Name: 'uact', Value: '5' }
+        - { Name: 'oq', Value: '${p_q}' }
+        - { Name: 'sclient', Value: 'gws-wiz' }
+    PostData:
+      Text: ''
+
