@@ -1,4 +1,10 @@
 Reqs:{{range .Log.Entries}}
+ {{- if stringsContains .Request.Url "http://bing.com/?" }}
+
+
+- Transaction: {{ slice .Request.Url 17 }}
+  Requests:
+ {{- else}}
   - URL: {{.Request.Url}}
     Method: {{.Request.Method}}
     Headers:
@@ -21,4 +27,5 @@ Reqs:{{range .Log.Entries}}
        {{- end}}
       {{- end}}
     {{- end}}
+ {{- end}}
 {{end}}
