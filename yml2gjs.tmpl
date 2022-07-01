@@ -23,7 +23,7 @@ start {
 
     defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
 
-    group(users: '${c_lt_users}', rampUp: '${c_lt_ramp}') {
+    group(name: 'Thread Group', users: '${c_lt_users}', rampUp: '${c_lt_ramp}') {
       headers {
         header(name: 'Host', value: '${c_app_host}')
         header(name: 'Origin', value: '${c_app_host}')
@@ -35,9 +35,9 @@ start {
       }
       cookies()
       cache()
-      check_response {
-        status() eq 200
-      }
+      // check_response {
+      //   status() eq 200
+      // }
       check_response applyTo: 'parent', {
         text(not) contains '${c_app_error_kw}'
       }
