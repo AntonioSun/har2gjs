@@ -1,0 +1,228 @@
+Variables:
+  - {"Name":"p_session_email_","Value":"user@example.com"}
+  - {"Name":"p_session_password_","Value":"password"}
+
+Reqs:
+
+
+- Transaction: Landing Page
+  Requests:
+
+  - URL: http://${c_app_host}/
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Sign in
+  Requests:
+
+  - URL: http://${c_app_host}/sign_in
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+  - URL: http://${c_app_host}/session
+    Method: POST
+    Headers:
+      - { Name: 'Content-Type', Value: 'application/x-www-form-urlencoded' }
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Params: 
+        - { Name: 'utf8', Value: '✓' }
+        - { Name: 'authenticity_token', Value: 'xfBuy+we5xV1rQizYTHOF9P7qdVjppOk+8Qy7bkD1IpNd3byL6bIK0Zh/PCvEBs/A3KeFp+kiSE3JBd9igkDeg==' }
+        - { Name: 'session[email]', Value: '${p_session_email_}' }
+        - { Name: 'session[password]', Value: '${p_session_password_}' }
+        - { Name: 'commit', Value: 'Sign in' }
+      
+
+  - URL: http://${c_app_host}/
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Addresses Menu
+  Requests:
+
+  - URL: http://${c_app_host}/addresses
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Show Entry
+  Requests:
+
+  - URL: http://${c_app_host}/addresses/6
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Edit Entry
+  Requests:
+
+  - URL: http://${c_app_host}/addresses/6/edit
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Update Address
+  Requests:
+
+  - URL: http://${c_app_host}/addresses/6
+    Method: POST
+    Headers:
+      - { Name: 'Content-Type', Value: 'multipart/form-data; boundary=----WebKitFormBoundaryyDYcX8UXoiomjuZB' }
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Text: |
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="utf8"
+        
+        ✓
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="_method"
+        
+        patch
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="authenticity_token"
+        
+        lZ690insTZ6yYlQsIFgLEOVBae02mLTNfZ32D1OamBM2N+PbYW1Rw33lh0xOt9gnUAeQ3AC+hwfVzsGcs6Ip/Q==
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[first_name]"
+        
+        a
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[last_name]"
+        
+        d
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[address1]"
+        
+        asdfa
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[address2]"
+        
+        asdfa
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[city]"
+        
+        asdfa
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[state]"
+        
+        AL
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[zip_code]"
+        
+        aasdfa
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[birthday]"
+        
+        
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[color]"
+        
+        #000000
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[age]"
+        
+        
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[website]"
+        
+        
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[picture]"; filename=""
+        Content-Type: application/octet-stream
+        
+        
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[phone]"
+        
+        
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[interest_climb]"
+        
+        0
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[interest_dance]"
+        
+        0
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[interest_read]"
+        
+        0
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="address[note]"
+        
+        n
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB
+        Content-Disposition: form-data; name="commit"
+        
+        Update Address
+        ------WebKitFormBoundaryyDYcX8UXoiomjuZB--
+        
+
+  - URL: http://${c_app_host}/addresses/6
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: List Addresses
+  Requests:
+
+  - URL: http://${c_app_host}/addresses
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html, application/xhtml+xml' }
+    PostData:
+      Text: ''
+
+
+
+- Transaction: Sign Out
+  Requests:
+
+  - URL: http://${c_app_host}/sign_out
+    Method: POST
+    Headers:
+      - { Name: 'Content-Type', Value: 'application/x-www-form-urlencoded' }
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Params: 
+        - { Name: '_method', Value: 'delete' }
+        - { Name: 'authenticity_token', Value: 'q+mXPpmOn0WcZEXMgm159ZGhyx6M//ar93CIJfnjFyIllyP2d39M23FP8/wRkBZ0BZXfHO+DO6EEpT1/CEAObg==' }
+      
+
+  - URL: http://${c_app_host}/sign_in
+    Method: GET
+    Headers:
+      - { Name: 'Accept', Value: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9' }
+    PostData:
+      Text: ''
+
