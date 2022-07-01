@@ -82,13 +82,15 @@ start {
       check_response applyTo: 'parent', {
         text() excludes '${c_app_error_kw}'
       }
-      {{- range .Reqs}}
+      {{- $txc := 0}}{{range .Reqs}}
+      {{- $txc = add $txc 1}} {{- $txn := sprintf "%02d" $txc}}
 
-      transaction('TR0 {{.Transaction}}') {
+      jsrsampler '--== Tx: {{.Transaction}} ==--', inline: '', enabled: false
+      transaction('Tx{{$txn}} {{.Transaction}}') {
         {{range .Requests -}}
         {{- $url := regexpReplaceAllString (stringsReplace .URL $hosturl "" 1) `\?.*$` ""}}
         {{- $urlname := fpBase $url}}
-        http (method: '{{.Method}}', path: '{{$url}}', name: 'T0r_{{$urlname}}') {
+        http (method: '{{.Method}}', path: '{{$url}}', name: 'Tx{{$txn}}r {{$urlname}}') {
           {{if .Headers}}headers {
             {{- range .Headers}}
             header(name: '{{.Name}}', value: '{{.Value}}')
