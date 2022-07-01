@@ -116,7 +116,15 @@ start {
         }
       {{end}}
       }
+      transaction('Think Time') {
+        uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
+        jsrsampler 'Think Time: {{.Transaction}}', inline: 'return true'
+      }
     {{- end}}
+      transaction('Pace Time') {
+	uniform_timer (name: 'Pace Time', delay: '${c_pt_delay}', range: '${c_pt_range}')
+	jsrsampler 'Pace Time', inline: 'return true'
+      }
     }
 {{ if not (ne (ENV "GJS_IsInsert") "")}}
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
