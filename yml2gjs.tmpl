@@ -83,10 +83,11 @@ start {
         text() excludes '${c_app_error_kw}'
       }
       {{- range .Reqs}}
-      {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
-      {{- $urlname := fpBase $url}}
 
-      transaction('T0x_{{$urlname}}', generate: true) {
+      transaction('TR0 {{.Transaction}}') {
+        {{range .Requests -}}
+        {{- $url := regexpReplaceAllString (stringsReplace .URL $hosturl "" 1) `\?.*$` ""}}
+        {{- $urlname := fpBase $url}}
         http (method: '{{.Method}}', path: '{{$url}}', name: 'T0r_{{$urlname}}') {
           {{if .Headers}}headers {
             {{- range .Headers}}
@@ -111,8 +112,9 @@ start {
 
           {{ $code := coalesce .Code "//extract_jmes expression: 'book.id', variable: 'p_bookId'" }}{{ $code | indent 10 }}
         }
-      }{{end}}
-      // end group
+      {{end}}
+      }
+    {{- end}}
     }
 {{ if not (ne (ENV "GJS_IsInsert") "")}}
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
