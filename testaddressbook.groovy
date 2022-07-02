@@ -32,9 +32,9 @@ start {
       }
       cookies()
       cache()
-      // check_response {
-      //   status() eq 200
-      // }
+      check_response {
+        status() eq 200 or 302
+      }
       check_response applyTo: 'parent', {
         text(not) contains '${c_app_error_kw}'
       }
@@ -55,9 +55,8 @@ start {
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Landing Page', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Sign in ==--', inline: '', enabled: false
@@ -109,9 +108,8 @@ start {
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Sign in', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Addresses Menu ==--', inline: '', enabled: false
@@ -130,9 +128,8 @@ start {
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Addresses Menu', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Show Entry ==--', inline: '', enabled: false
@@ -151,9 +148,8 @@ start {
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Show Entry', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Edit Entry ==--', inline: '', enabled: false
@@ -172,9 +168,8 @@ start {
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Edit Entry', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Update Address ==--', inline: '', enabled: false
@@ -295,9 +290,8 @@ Update Address
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Update Address', inline: 'return true'
       }
 
       jsrsampler '--== Tx: List Addresses ==--', inline: '', enabled: false
@@ -316,9 +310,8 @@ Update Address
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: List Addresses', inline: 'return true'
       }
 
       jsrsampler '--== Tx: Sign Out ==--', inline: '', enabled: false
@@ -355,13 +348,11 @@ Update Address
         }
       
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: Sign Out', inline: 'return true'
       }
-      transaction('Pace Time') {
-	uniform_timer (name: 'Pace Time', delay: '${c_pt_delay}', range: '${c_pt_range}')
-	jsrsampler 'Pace Time', inline: 'return true'
+      flow (name: 'Pace Time Flow Control Action') {
+        uniform_timer (name: 'Pace Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
       }
     }
 
