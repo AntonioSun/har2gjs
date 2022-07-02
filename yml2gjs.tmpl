@@ -76,9 +76,9 @@ start {
       }
       cookies(clearEachIteration: true)
       cache()
-      // check_response {
-      //   status() eq 200
-      // }
+      check_response {
+        status() eq 200 or 302
+      }
       check_response applyTo: 'parent', {
         text() excludes '${c_app_error_kw}'
       }
@@ -116,14 +116,12 @@ start {
         }
       {{end}}
       }
-      transaction('Think Time') {
+      flow (name: 'Think Time Flow Control Action') {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
-        jsrsampler 'Think Time: {{.Transaction}}', inline: 'return true'
       }
     {{- end}}
-      transaction('Pace Time') {
-	uniform_timer (name: 'Pace Time', delay: '${c_pt_delay}', range: '${c_pt_range}')
-	jsrsampler 'Pace Time', inline: 'return true'
+      flow (name: 'Pace Time Flow Control Action') {
+        uniform_timer (name: 'Pace Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
       }
     }
 {{ if not (ne (ENV "GJS_IsInsert") "")}}
