@@ -1,10 +1,13 @@
+{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host -}}
+{{- $app := ENV "GJS_App" -}}
+{{ if ne (ENV "GJS_IsInsert") "" -}}
+fragment {
+{{- else -}}
 @GrabConfig(systemClassLoader = true)
 @Grab('net.simonix.scripts:groovy-jmeter')
 
 @groovy.transform.BaseScript net.simonix.dsl.jmeter.TestScript script
 
-{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host -}}
-{{- $app := ENV "GJS_App" -}}
 start {
   plan {
     variables {
@@ -22,6 +25,7 @@ start {
     }
 
     defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
+{{- end}}
 
     group(name: 'Thread Group', users: '${c_lt_users}', rampUp: '${c_lt_ramp}') {
       headers {
@@ -76,7 +80,7 @@ start {
         }
       }{{end}}
     }
-
+{{ if not (ne (ENV "GJS_IsInsert") "")}}
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
     backend(name: 'InfluxDb Backend', enabled: true) {
       arguments {
@@ -97,3 +101,6 @@ start {
     view () // View Result Tree
   }
 }
+{{- else -}}
+}
+{{- end}}
