@@ -15,6 +15,7 @@ start {
       variable(name: 'c_app_error_kw', value: '${__P(c_app_error_kw,Wrong)}', description: 'keyword indicates wrong application returns')
       variable(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}', description: 'loadtest users')
       variable(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}', description: 'loadtest ramp up in seconds')
+      variable(name: 'c_lt_loops', value: '${__P(c_lt_loops, {{ coalesce (ENV "GJS_LT_LOOPS") 1}})}', description: 'loadtest loops')
       variable(name: 'c_tt_range', value: '${__P(c_tt_range, {{ coalesce (ENV "GJS_TT_RANGE") 6000}})}', description: 'Think Time: Maximum random number of ms to delay')
       variable(name: 'c_tt_delay', value: '${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}', description: 'Think Time: Ms to delay in addition to random time')
       variable(name: 'c_pt_range', value: '${__P(c_pt_range, {{ coalesce (ENV "GJS_TT_RANGE") 120000}})}', description: 'Pace Time: Maximum random number of ms to delay')
@@ -27,7 +28,8 @@ start {
     defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
 {{- end}}
 
-    group(name: 'Thread Group', users: '${c_lt_users}', rampUp: '${c_lt_ramp}') {
+    group(name: 'Thread Group',
+      users: '${c_lt_users}', rampUp: '${c_lt_ramp}', loops: '${c_lt_loops}') {
       headers {
         header(name: 'Host', value: '${c_app_host}')
         header(name: 'Origin', value: '${c_app_host}')
