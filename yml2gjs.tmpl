@@ -77,11 +77,7 @@ start {
 '''
           {{- end}}
 
-          // check_response {
-          //   status() eq 200
-          // }
-
-          //extract_jmes expressions: '.book.id', variables: 'p_bookId'
+          {{ $code := coalesce .Code "//extract_jmes expression: 'book.id', variable: 'p_bookId'" }}{{ $code }}
         }
       }{{end}}
     }
