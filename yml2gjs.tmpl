@@ -120,6 +120,7 @@ start {
         uniform_timer (name: 'Think Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
       }
     {{- end}}
+      debug displayJMeterVariables: true, displayJMeterProperties: true, enabled: false
       flow (name: 'Pace Time Flow Control Action') {
         uniform_timer (name: 'Pace Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
       }
