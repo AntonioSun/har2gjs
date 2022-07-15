@@ -11,7 +11,8 @@ fragment {
 start {
   plan {
     variables {
-      variable(name: 'c_app_host', value: '${__P(c_app_host, {{ coalesce $host "localhost"}})}', description: 'Test server host name')
+      // using __env() custom JMeter Functions, https://jmeter-plugins.org/wiki/Functions/
+      variable(name: 'c_app_host', value: '${__env(c_app_host, , {{ coalesce $host "localhost"}})}', description: 'Test server host name')
       variable(name: 'c_app_error_kw', value: '${__P(c_app_error_kw,Wrong)}', description: 'keyword indicates wrong application returns')
       variable(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}', description: 'loadtest users')
       variable(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 5}})}', description: 'loadtest ramp up in seconds')
@@ -22,6 +23,7 @@ start {
       variable(name: 'c_tt_delay', value: '${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}', description: 'Think Time: Ms to delay in addition to random time')
       variable(name: 'c_pt_range', value: '${__P(c_pt_range, {{ coalesce (ENV "GJS_TT_RANGE") 120000}})}', description: 'Pace Time: Maximum random number of ms to delay')
       variable(name: 'c_pt_delay', value: '${__P(c_pt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 60000}})}', description: 'Pace Time: Ms to delay in addition to random time')
+      variable(name: 'c_cfg_Influxdb', value: '${__env(c_cfg_Influxdb, , localhost)}', description: 'Influxdb server host name')
       {{range .Variables -}}
       variable(name: '{{.Name}}', value: '{{.Value}}')
       {{end -}}
@@ -86,13 +88,13 @@ start {
     backend(name: 'InfluxDb Backend', enabled: true) {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
-        argument(name: 'influxdbUrl', value: 'http://{{ENV "GJS_InfluxdbUrl"}}:8086/write?db=jmeter')
-        argument(name: 'application', value: '''${__groovy(("${__TestPlanName}").replace('.jmx',''),)}''')
+        argument(name: 'influxdbUrl', value: 'http://${c_cfg_Influxdb}:8086/write?db=jmeter_results')
+        argument(name: 'application', value: '{{ coalesce (ENV "GJS_App") "Example"}}_${START.YMD}-${START.HMS}')
         argument(name: 'measurement', value: 'jmeter')
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
         argument(name: 'percentiles', value: '90;95;99')
-        argument(name: 'testTitle', value: "{{ENV "GJS_App"}} - users: ${jmt_users}, rampup: ${jmt_ramp}")
+        argument(name: 'testTitle', value: '{{ENV "GJS_App"}} - users: ${c_lt_users}, rampup: ${c_lt_ramp}')
         argument(name: "eventTags", value: '')
       }
     }
