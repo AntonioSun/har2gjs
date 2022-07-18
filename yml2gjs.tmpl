@@ -23,11 +23,15 @@ start {
       variable(name: 'c_tt_delay', value: '${__P(c_tt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 2000}})}', description: 'Think Time: Ms to delay in addition to random time')
       variable(name: 'c_pt_range', value: '${__P(c_pt_range, {{ coalesce (ENV "GJS_TT_RANGE") 120000}})}', description: 'Pace Time: Maximum random number of ms to delay')
       variable(name: 'c_pt_delay', value: '${__P(c_pt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 60000}})}', description: 'Pace Time: Ms to delay in addition to random time')
+      variable(name: 'c_cfg_TestName', value: '{{ coalesce (ENV "GJS_App") "Example"}}', description: 'Test name to identify different tests')
       variable(name: 'c_cfg_TimeTag', value: '_${START.YMD}-${START.HMS}', description: 'Time based tag to identify different tests')
       variable(name: 'c_cfg_Influxdb', value: '${__env(c_cfg_Influxdb, , localhost)}', description: 'Influxdb server host name')
       {{range .Variables -}}
       variable(name: '{{.Name}}', value: '{{.Value}}')
       {{end -}}
+    }
+    variables {
+      variable(name: 'c_cfg_TestID', value: '${c_cfg_TestName}${c_cfg_TimeTag}', description: 'Test ID, for identification and reporting purpose')
     }
 
     defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
@@ -90,18 +94,18 @@ start {
       arguments {
         argument(name: 'influxdbMetricsSender', value: 'org.apache.jmeter.visualizers.backend.influxdb.HttpMetricsSender')
         argument(name: 'influxdbUrl', value: 'http://${c_cfg_Influxdb}:8086/write?db=jmeter_results')
-        argument(name: 'application', value: '{{ coalesce (ENV "GJS_App") "Example"}}${c_cfg_TimeTag}')
+        argument(name: 'application', value: '${c_cfg_TestID}')
         argument(name: 'measurement', value: 'jmeter')
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
         argument(name: 'percentiles', value: '90;95;99')
-        argument(name: 'testTitle', value: '{{ENV "GJS_App"}} - users: ${c_lt_users}, rampup: ${c_lt_ramp}')
+        argument(name: 'testTitle', value: '${c_cfg_TestID} - users: ${c_lt_users}, duration ${c_lt_duration}, rampup: ${c_lt_ramp}')
         argument(name: "eventTags", value: '')
       }
     }
     {{end -}}
 
-    summary(file: '{{ coalesce (ENV "GJS_App") "result"}}${c_cfg_TimeTag}.jtl') //, enabled: true
+    summary(file: '${c_cfg_TestID}.jtl') //, enabled: true
     view () // View Result Tree
   }
 }
