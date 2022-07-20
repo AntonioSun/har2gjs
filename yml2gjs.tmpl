@@ -55,7 +55,7 @@ start {
       //   status() eq 200
       // }
       check_response applyTo: 'parent', {
-        text(not) contains '${c_app_error_kw}'
+        text() excludes '${c_app_error_kw}'
       }
       {{- range .Reqs}}
       {{- $url := regexpReplaceAllString (stringsReplace .URL $hosturl "" 1) `\?.*$` ""}}
