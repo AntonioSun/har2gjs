@@ -98,7 +98,7 @@ start {
         argument(name: 'measurement', value: 'jmeter')
         argument(name: 'summaryOnly', value: 'false')
         argument(name: 'samplersRegex', value: '.*')
-        argument(name: 'percentiles', value: '90;95;99')
+        argument(name: 'percentiles', value: '50;90;95;99')
         argument(name: 'testTitle', value: '${c_cfg_TestID} - users: ${c_lt_users}, duration ${c_lt_duration}, rampup: ${c_lt_ramp}')
         argument(name: "eventTags", value: '')
       }
