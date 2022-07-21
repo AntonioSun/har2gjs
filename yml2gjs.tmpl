@@ -1,4 +1,8 @@
-{{ $host := ENV "GJS_Host" -}} {{- $hosturl := print "https://" $host -}}
+{{ $hostName := ENV "GJS_HostName" -}}
+{{ $hostPort := ENV "GJS_HostPort" -}}
+{{ $hostProt := ENV "GJS_HostProt" -}}
+{{ $hostUrl := print $hostProt "://" $hostName -}}
+{{ if not (eq $hostPort "" "80" "443") }}{{ $hostUrl = print $hostUrl ":" $hostPort }}{{end -}}
 {{- $app := ENV "GJS_App" -}}
 {{ if ne (ENV "GJS_IsInsert") "" -}}
 fragment {
@@ -12,7 +16,9 @@ start {
   plan {
     variables {
       // using __env() custom JMeter Functions, https://jmeter-plugins.org/wiki/Functions/
-      variable(name: 'c_app_host', value: '${__env(c_app_host, , {{ coalesce $host "localhost"}})}', description: 'Test server host name')
+      variable(name: 'c_app_host_name', value: '${__env(c_app_host_name, , {{ coalesce $hostName "localhost"}})}', description: 'Test server host name')
+      variable(name: 'c_app_host_port', value: '${__env(c_app_host_port, , {{ coalesce $hostPort "443"}})}', description: 'Test server host port')
+      variable(name: 'c_app_protocol', value: '${__env(c_app_protocol, , {{ coalesce $hostProt "https"}})}', description: 'Test server protocol')
       variable(name: 'c_app_error_kw', value: '${__P(c_app_error_kw,Wrong)}', description: 'keyword indicates wrong application returns')
       variable(name: 'c_lt_users', value: '${__P(c_lt_users, {{ coalesce (ENV "GJS_LT_USERS") 10}})}', description: 'loadtest users')
       variable(name: 'c_lt_ramp', value: '${__P(c_lt_ramp, {{ coalesce (ENV "GJS_LT_RAMP") 30}})}', description: 'loadtest ramp up in seconds')
@@ -34,16 +40,16 @@ start {
       variable(name: 'c_cfg_TestID', value: '${c_cfg_TestName}${c_cfg_TimeTag}', description: 'Test ID, for identification and reporting purpose')
     }
 
-    defaults(protocol: 'https', domain: '${c_app_host}', port: 443)
+    defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}', port:  '${c_app_host_port}')
 {{- end}}
 
     group(name: 'Thread Group', delay: '${c_lt_delay}', delayedStart: true,
       users: '${c_lt_users}', rampUp: '${c_lt_ramp}', keepUser: false,
       loops: '${c_lt_loops}', duration: '${c_lt_duration}', scheduler: {{ not (ne (ENV "GJS_UseLoop") "") }}) {
       headers {
-        header(name: 'Host', value: '${c_app_host}')
-        header(name: 'Origin', value: '${c_app_host}')
-        header(name: 'Referer', value: '${c_app_host}')
+        header(name: 'Host', value: '${c_app_host_name}')
+        header(name: 'Origin', value: '${c_app_host_name}')
+        header(name: 'Referer', value: '${c_app_host_name}')
         header(name: 'Connection', value: 'keep-alive')
         header(name: 'Cache-Control', value: 'max-age=0')
         header(name: 'Upgrade-Insecure-Requests', value: '1')
@@ -58,7 +64,7 @@ start {
         text() excludes '${c_app_error_kw}'
       }
       {{- range .Reqs}}
-      {{- $url := regexpReplaceAllString (stringsReplace .URL $hosturl "" 1) `\?.*$` ""}}
+      {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
       {{- $urlname := fpBase $url}}
 
       transaction('T0x_{{$urlname}}') {
