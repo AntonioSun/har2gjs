@@ -88,7 +88,7 @@ start {
       jsrsampler '--== Tx: {{.Transaction}} ==--', inline: '', enabled: false
       transaction('Tx{{$txn}} {{.Transaction}}') {
         {{range .Requests -}}
-        {{- $url := regexpReplaceAllString (stringsReplace .URL $hosturl "" 1) `\?.*$` ""}}
+        {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
         {{- $urlname := fpBase $url}}
         http (method: '{{.Method}}', path: '{{$url}}', name: 'Tx{{$txn}}r {{$urlname}}') {
           {{if .Headers}}headers {
