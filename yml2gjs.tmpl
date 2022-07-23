@@ -6,6 +6,7 @@
 {{- $app := ENV "GJS_App" -}}
 {{ if ne (ENV "GJS_IsInsert") "" -}}
 fragment {
+    simple {
 {{- else -}}
 @GrabConfig(systemClassLoader = true)
 @Grab('net.simonix.scripts:groovy-jmeter')
@@ -40,12 +41,12 @@ start {
       variable(name: 'c_cfg_TestID', value: '${c_cfg_TestName}${c_cfg_TimeTag}', description: 'Test ID, for identification and reporting purpose')
     }
 
-    defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}', port:  '${c_app_host_port}')
-{{- end}}
-
     group(name: 'Thread Group', delay: '${c_lt_delay}', delayedStart: true,
       users: '${c_lt_users}', rampUp: '${c_lt_ramp}', keepUser: false,
       loops: '${c_lt_loops}', duration: '${c_lt_duration}', scheduler: {{ not (ne (ENV "GJS_UseLoop") "") }}) {
+{{- end}}
+
+      defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}', port:  '${c_app_host_port}')
       headers {
         header(name: 'Host', value: '${c_app_host_name}')
         header(name: 'Origin', value: '${c_app_host_name}')
@@ -93,6 +94,7 @@ start {
           {{ $code := coalesce .Code "//extract_jmes expression: 'book.id', variable: 'p_bookId'" }}{{ $code | indent 10 }}
         }
       }{{end}}
+      // end group
     }
 {{ if not (ne (ENV "GJS_IsInsert") "")}}
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
