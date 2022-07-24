@@ -124,6 +124,7 @@ start {
       flow (name: 'Pace Time Flow Control Action') {
         uniform_timer (name: 'Pace Time', delay: '${c_tt_delay}', range: '${c_tt_range}')
       }
+      // end group
     }
 {{ if not (ne (ENV "GJS_IsInsert") "")}}
     {{ if ne (ENV "GJS_InfluxdbUse") "" -}}
