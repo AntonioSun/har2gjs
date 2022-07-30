@@ -83,7 +83,9 @@ start {
         text() excludes '${c_app_error_kw}'
       }
       {{- $txc := 0}}{{range .Reqs}}
-      {{- $txc = add $txc 1}} {{- $txn := sprintf "%02d" $txc}}
+      {{- $txc = add $txc 1}}
+      {{- if eq .Transaction "Sign Out" }}{{ $txc = 99 }}{{end}}
+      {{- $txn := sprintf "%02d" $txc}}
 
       jsrsampler '--== Tx: {{.Transaction}} ==--', inline: '', enabled: false
       transaction('Tx{{$txn}} {{.Transaction}}') {
