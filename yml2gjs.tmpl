@@ -43,7 +43,7 @@ start {
       variable(name: 'c_cfg_TimeTag', value: '_${START.YMD}-${START.HMS}', description: 'Time based tag to identify different tests')
       variable(name: 'c_cfg_Influxdb', value: '${__env(c_cfg_Influxdb, , localhost)}', description: 'Influxdb server host name')
       {{range .Variables -}}
-      variable(name: '{{.Name}}', value: '{{.Value}}')
+      variable(name: 'p_{{.Name}}', value: '{{.Value}}', description: '{{.Name}}')
       {{end -}}
     }
     variables {
