@@ -50,7 +50,7 @@ start {
       variable(name: 'c_cfg_TestID', value: '${c_cfg_TestName}${c_cfg_TimeTag}', description: 'Test ID, for identification and reporting purpose')
     }
 
-    group(name: 'Thread Group', delay: '${c_lt_delay}', delayedStart: true,
+    group(name: 'Thread Group', delay: '${c_lt_delay}', delayedStart: true, onError: 'start_next',
       users: '${c_lt_users}', rampUp: '${c_lt_ramp}', keepUser: false,
       loops: '${c_lt_loops}', duration: '${c_lt_duration}', scheduler: {{ not (ne (ENV "GJS_UseLoop") "") }}) {
 {{- end}}
