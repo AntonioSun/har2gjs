@@ -87,7 +87,7 @@ start {
       {{- if eq .Transaction "Sign Out" }}{{ $txc = 99 }}{{end}}
       {{- $txn := sprintf "%02d" $txc}}
 
-      jsrsampler '--== Tx: {{.Transaction}} ==--', inline: '', enabled: false
+      debug '--== Tx: {{.Transaction}} ==--', displayJMeterVariables: true, displayJMeterProperties: true, enabled: false
       transaction('Tx{{$txn}} {{.Transaction}}') {
         {{range .Requests -}}
         {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
