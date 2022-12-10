@@ -1,8 +1,15 @@
+{{ $hostProt := ENV "GJS_HostProt" -}}
 {{ $hostName := ENV "GJS_HostName" -}}
 {{ $hostPort := ENV "GJS_HostPort" -}}
-{{ $hostProt := ENV "GJS_HostProt" -}}
 {{ $hostUrl := print $hostProt "://" $hostName -}}
-{{ if not (eq $hostPort "" "80" "443") }}{{ $hostUrl = print $hostUrl ":" $hostPort }}{{end -}}
+{{ $hostPortVarDef := "" -}}
+{{ $hostPortDefault := "" -}}
+{{ if not (eq $hostPort "" "80" "443") -}}
+  {{$hostUrl = print $hostUrl ":" $hostPort -}}
+  {{$hostPortVarDef = `      variable(name: 'c_app_host_port', value: '${__env(c_app_host_port, , {{ coalesce $hostPort "443"}})}', description: 'Test server host port')
+` -}}
+  {{$hostPortDefault = `, port:  '${c_app_host_port}'` -}}
+{{end -}}
 {{- $app := ENV "GJS_App" -}}
 {{ if ne (ENV "GJS_IsInsert") "" -}}
 fragment {
@@ -17,9 +24,9 @@ start {
   plan {
     variables {
       // test host, using __env(), https://jmeter-plugins.org/wiki/Functions/
-      variable(name: 'c_app_host_name', value: '${__env(c_app_host_name, , {{ coalesce $hostName "localhost"}})}', description: 'Test server host name')
-      variable(name: 'c_app_host_port', value: '${__env(c_app_host_port, , {{ coalesce $hostPort "443"}})}', description: 'Test server host port')
       variable(name: 'c_app_protocol', value: '${__env(c_app_protocol, , {{ coalesce $hostProt "https"}})}', description: 'Test server protocol')
+      variable(name: 'c_app_host_name', value: '${__env(c_app_host_name, , {{ coalesce $hostName "localhost"}})}', description: 'Test server host name')
+{{ $hostPortVarDef }}
       // app error keyword
       variable(name: 'c_app_error_kw', value: '${__P(c_app_error_kw,Wrong)}', description: 'keyword indicates wrong application returns')
 
@@ -55,7 +62,7 @@ start {
       loops: '${c_lt_loops}', duration: '${c_lt_duration}', scheduler: {{ not (ne (ENV "GJS_UseLoop") "") }}) {
 {{- end}}
 
-      defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}', port:  '${c_app_host_port}')
+      defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}'{{ $hostPortDefault }})
       headers {
         header(name: 'Host', value: '${c_app_host_name}')
         header(name: 'Origin', value: '${c_app_host_name}')
