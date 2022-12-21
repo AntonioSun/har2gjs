@@ -46,6 +46,7 @@ start {
       variable(name: 'c_pt_delay', value: '${__P(c_pt_delay, {{ coalesce (ENV "GJS_TT_DELAY") 60000}})}', description: 'Pace Time: Ms to delay in addition to random time')
 
       // test cfg parameters
+      variable(name: 'c_cfg_BaseDir', value: '${__groovy(org.apache.jmeter.services.FileServer.getFileServer().getBaseDir())}${__groovy(File.separator)}', description: 'Test script file path')
       variable(name: 'c_cfg_TestName', value: '{{ coalesce (ENV "GJS_App") "Example"}}', description: 'Test name to identify different tests')
       variable(name: 'c_cfg_TimeTag', value: '_${START.YMD}-${START.HMS}', description: 'Time based tag to identify different tests')
       variable(name: 'c_cfg_Influxdb', value: '${__env(c_cfg_Influxdb, , localhost)}', description: 'Influxdb server host name')
@@ -56,6 +57,7 @@ start {
     variables {
       variable(name: 'c_cfg_TestID', value: '${c_cfg_TestName}${c_cfg_TimeTag}', description: 'Test ID, for identification and reporting purpose')
     }
+    csv(file: '${c_cfg_BaseDir}${c_cfg_TestName}.csv', enabled: false)
 
     group(name: 'Thread Group', delay: '${c_lt_delay}', delayedStart: true, onError: 'start_next',
       users: '${c_lt_users}', rampUp: '${c_lt_ramp}', keepUser: false,
@@ -65,12 +67,12 @@ start {
       defaults(protocol: '${c_app_protocol}', domain: '${c_app_host_name}'{{ $hostPortDefault }})
       headers {
         header(name: 'Host', value: '${c_app_host_name}')
-        header(name: 'Origin', value: '${c_app_host_name}')
-        header(name: 'Referer', value: '${c_app_host_name}')
+        header(name: 'Origin', value: '${c_app_protocol}://${c_app_host_name}')
+        header(name: 'Referer', value: '${c_app_protocol}://${c_app_host_name}')
         header(name: 'Connection', value: 'keep-alive')
         header(name: 'Cache-Control', value: 'max-age=0')
         header(name: 'Upgrade-Insecure-Requests', value: '1')
-        header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36')
+        header(name: 'User-Agent', value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
       }
       cookies(clearEachIteration: true)
       cache()
@@ -84,7 +86,7 @@ start {
       {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
       {{- $urlname := fpBase $url}}
 
-      transaction('T0x_{{$urlname}}') {
+      transaction('T0x_{{$urlname}}', generate: true) {
         http (method: '{{.Method}}', path: '{{$url}}', name: 'T0r_{{$urlname}}') {
           {{if .Headers}}headers {
             {{- range .Headers}}
