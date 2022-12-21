@@ -88,7 +88,7 @@ start {
       {{- $txn := sprintf "%02d" $txc}}
 
       debug '--== Tx: {{.Transaction}} ==--', displayJMeterVariables: true, displayJMeterProperties: true, enabled: false
-      transaction('Tx{{$txn}} {{.Transaction}}') {
+      transaction('Tx{{$txn}} {{.Transaction}}', generate: true) {
         {{range .Requests -}}
         {{- $url := regexpReplaceAllString (stringsReplace .URL $hostUrl "" 1) `\?.*$` ""}}
         {{- $urlname := fpBase $url}}
